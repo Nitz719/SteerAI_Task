@@ -1,14 +1,19 @@
 #!/bin/bash
 set -e
 
-IMAGE_NAME="ros2-jazzy-dev"
-CONTAINER_NAME="ros2_jazzy_container"
+IMAGE_NAME="ros2-jazzy-turtlebot4:latest"
+CONTAINER_NAME="ros2_jazzy_turtlebot4"
 
-# Run the Docker container with volume and interactive shell
-echo "Running container: $CONTAINER_NAME"
+WORKSPACE_DIR="$(pwd)/ros2_ws"
+mkdir -p "$WORKSPACE_DIR"
+
+echo "Launching TurtleBot 4 simulation in container: $CONTAINER_NAME"
 docker run -it --rm \
-    --name $CONTAINER_NAME \
-    --net=host \
-    --privileged \
-    -v $(pwd)/ros2_ws:/ros2_ws \
-    $IMAGE_NAME
+  --name "$CONTAINER_NAME" \
+  --net=host \
+  --privileged \
+  -e DISPLAY="$DISPLAY" \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v "$WORKSPACE_DIR":/ros2_ws \
+  -w /ros2_ws \
+  "$IMAGE_NAME"
